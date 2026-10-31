@@ -6,6 +6,9 @@ from gallery_dl import config, extractor
 from gallery_dl.extractor.message import Message
 
 
+BROWSERS = {"chrome", "firefox", "safari", "edge", "brave", "chromium", "opera", "vivaldi"}
+
+
 class CookiesError(RuntimeError):
     pass
 
@@ -13,7 +16,9 @@ class CookiesError(RuntimeError):
 def search_pins(query, limit=60, cookies="cookies.txt"):
     """Yield {'id', 'url', 'title', 'meta'} for the first `limit` pins of a Pinterest search."""
     config.clear()
-    if cookies:
+    if cookies in BROWSERS:  # read the login straight from the browser, nothing to export
+        config.set(("extractor",), "cookies", (cookies,))
+    elif cookies:
         cookies = os.path.expanduser(cookies)
         if os.path.exists(cookies):
             config.set(("extractor",), "cookies", cookies)

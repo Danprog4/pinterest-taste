@@ -34,28 +34,33 @@ pip install -e .
 The first run downloads SigLIP 2 and DINOv2 from Hugging Face (about 5 GB, once). It uses Apple GPU (mps), CUDA or CPU,
 whichever is found. Scoring is ~3 ms per pin after the models are loaded; loading takes ~10 s.
 
-## Cookies: connect your Pinterest (step by step)
+## Cookies: connect your Pinterest
 
-Cookies are optional. Without `cookies.txt` the search runs anonymously (it works, the feed is just generic and shorter). With your cookies you get your own,
-personalized and much longer feed. The cookies file is a plain text file called `cookies.txt` in the folder you run from.
+Cookies are optional. Without them the search runs anonymously (it works, the feed is just generic and shorter).
+With them you search as yourself: a longer, personalized feed.
 
-1. Open **Chrome** and log in to https://www.pinterest.com as usual.
-2. Install the extension **"Get cookies.txt LOCALLY"** from the Chrome Web Store (it works offline, nothing is uploaded).
-3. Stay on a pinterest.com tab, click the extension icon, press **Export** (format: *Netscape*). A `.txt` file downloads.
-4. Rename it to `cookies.txt` and put it in the project folder (or pass `cookies="/path/to/file.txt"` / `--cookies /path/to/file.txt`).
-5. Check:
-   ```bash
-   python -m pinterest_taste "aesthetic men gym" --limit 10 --top 3
+### Easiest way (30 seconds, nothing to install)
+
+1. Open your browser (Chrome, Safari, Firefox...) and make sure you are **logged in to pinterest.com**.
+2. Tell the library which browser it is:
+   ```python
+   pt.search("aesthetic men gym", cookies="chrome")      # or "safari", "firefox", "edge", "brave"
    ```
-   You should see 3 lines with a score and an `i.pinimg.com` link.
+   ```bash
+   python -m pinterest_taste "aesthetic men gym" --cookies chrome
+   ```
+3. On a Mac a window may ask for permission to read the browser's data (Keychain, or "Full Disk Access" for Safari). Allow it.
 
-Notes:
-- `cookies.txt` is in `.gitignore`. **It is your login: never commit or share it.**
-- If it stops working after a few weeks, Pinterest logged the session out: log in again and re-export.
-- No extension? gallery-dl can read cookies straight from a browser: in `pinterest_taste/fetch.py` replace
-  `config.set(("extractor",), "cookies", cookies)` with `config.set(("extractor",), "cookies", ("chrome",))` (or `"firefox"`, `"safari"`).
-  On macOS, Chrome will ask for Keychain access.
-- If `search()` raises `CookiesError`, the path you passed explicitly is wrong. A missing default `cookies.txt` is fine: it just runs anonymously.
+That is all: the login is read straight from the browser, no files. Pinterest logged you out? Log in again in the browser.
+
+### If that fails: cookies.txt
+
+1. In Chrome, log in to pinterest.com and install the extension **"Get cookies.txt LOCALLY"**.
+2. On a pinterest.com tab click the extension, press **Export**.
+3. Rename the file to `cookies.txt` and put it in the project folder (or pass its path as `cookies=`).
+
+`cookies.txt` is in `.gitignore`. **It is your login: never commit or share it.**
+A wrong explicit path raises `CookiesError`; a missing default `cookies.txt` just means anonymous search.
 
 ## API
 
