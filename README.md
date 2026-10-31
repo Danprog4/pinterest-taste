@@ -36,7 +36,7 @@ whichever is found. Scoring is ~3 ms per pin after the models are loaded; loadin
 
 ## Cookies: connect your Pinterest (step by step)
 
-Pinterest search works without login, but only returns a thin generic slice. With your cookies you get your own,
+Cookies are optional. Without `cookies.txt` the search runs anonymously (it works, the feed is just generic and shorter). With your cookies you get your own,
 personalized and much longer feed. The cookies file is a plain text file called `cookies.txt` in the folder you run from.
 
 1. Open **Chrome** and log in to https://www.pinterest.com as usual.
@@ -55,7 +55,7 @@ Notes:
 - No extension? gallery-dl can read cookies straight from a browser: in `pinterest_taste/fetch.py` replace
   `config.set(("extractor",), "cookies", cookies)` with `config.set(("extractor",), "cookies", ("chrome",))` (or `"firefox"`, `"safari"`).
   On macOS, Chrome will ask for Keychain access.
-- If `search()` raises `CookiesError`, the file path is wrong.
+- If `search()` raises `CookiesError`, the path you passed explicitly is wrong. A missing default `cookies.txt` is fine: it just runs anonymously.
 
 ## API
 
