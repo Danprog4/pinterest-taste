@@ -1,0 +1,11 @@
+[project]
+name = "pinterest-taste"
+version = "0.1.0"
+description = "Pinterest search that returns pins scored by a learned visual taste (SigLIP 2 + DINOv2), via gallery-dl"
+requires-python = ">=3.10"
+dependencies = ["gallery-dl", "requests", "numpy", "pillow", "torch", "torchvision", "timm", "transformers"]
+
+[tool.setuptools]
+packages = ["pinterest_taste"]
+[tool.setuptools.package-data]
+pinterest_taste = ["taste_model.npz"]

@@ -1,0 +1,5 @@
+.venv/
+cookies.txt
+__pycache__/
+*.egg-info/
+out/
