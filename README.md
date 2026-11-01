@@ -101,7 +101,7 @@ Scoring is SigLIP 2 + DINOv2 embeddings fed to a pairwise ranker. The trained mo
 ## Install
 
 ```bash
-git clone https://github.com/onemanylov/pinterest-taste.git
+git clone https://github.com/Danprog4/pinterest-taste.git
 cd pinterest-taste
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e .
