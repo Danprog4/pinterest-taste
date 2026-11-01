@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Find fresh Pinterest photos for your TikTok carousels. Start with a reference or description, then let a local taste model sort the options. No paid AI API."
+    />
+    <meta name="color-scheme" content="light" />
+    <title>Pinterest Taste | Photos for TikTok carousels</title>
+    <link rel="icon" href="/static/icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/style.css?v=20261101-sort-5" />
+    <script src="/static/app.js?v=20261101-sort-4" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#workspace">Skip to results</a>
+    <header class="app-header">
+      <a class="brand" href="/" aria-label="Pinterest Taste home"
+        ><img src="/static/icon.svg" alt="" width="32" height="32" /><span
+          >Pinterest <strong>Taste</strong></span
+        ></a
+      >
+      <div class="header-right">
+        <span class="local-label"
+          ><span class="status-dot"></span>Running locally</span
+        ><button class="text-button" id="about-button">About the taste</button>
+      </div>
+    </header>
+    <div class="app-layout">
+      <aside class="sidebar" aria-label="Search settings">
+        <div class="sidebar-heading">
+          <span class="search-symbol" aria-hidden="true">⌕</span>
+          <h1>Find your next slide photo</h1>
+        </div>
+        <p class="sidebar-intro">
+          Bring a carousel reference, or describe the shot you need.
+        </p>
+        <form id="search-form">
+          <section class="reference-section" aria-label="Reference photo">
+            <label for="reference-file"
+              >Reference photo
+              <span class="optional-label">Optional</span></label
+            >
+            <input
+              id="reference-file"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              hidden
+            />
+            <button
+              type="button"
+              id="reference-drop"
+              class="reference-drop"
+              disabled
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="22"
+                height="22"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                aria-hidden="true"
+              >
+                <path
+                  d="M8 12.5 14.5 6a3 3 0 0 1 4.2 4.2L10 19a5 5 0 0 1-7.1-7.1L12 2.8"
+                />
+                <path d="m6 14 8-8" />
+              </svg>
+              <span
+                ><strong>Attach a photo</strong
+                ><span>or drop it here</span></span
+              >
+            </button>
+            <div id="reference-preview" class="reference-preview" hidden>
+              <img id="reference-image" alt="Your reference photo" />
+              <div>
+                <p id="reference-name"></p>
+                <button type="button" id="reference-remove" class="text-button">
+                  Remove photo
+                </button>
+              </div>
+            </div>
+            <p class="reference-help" id="reference-help">
+              JPG, PNG or WebP, up to 10 MB. Described on your computer.
+            </p>
+            <p
+              class="reference-status"
+              id="reference-status"
+              role="status"
+              aria-live="polite"
+              hidden
+            ></p>
+            <div
+              id="reference-model-progress"
+              class="model-progress"
+              hidden
+            ></div>
+            <button
+              type="button"
+              id="reference-retry"
+              class="secondary-button"
+              hidden
+            >
+              Try describing again
+            </button>
+            <div
+              id="reference-suggestions"
+              class="reference-suggestions"
+              role="group"
+              aria-label="Choose a search phrase"
+              hidden
+            ></div>
+          </section>
+          <label for="query">Describe the photo for your slide</label>
+          <textarea
+            id="query"
+            name="query"
+            rows="5"
+            maxlength="300"
+            required
+            placeholder="e.g. mens abs gym aesthetic"
+          ></textarea>
+          <div class="query-footer">
+            <span>A short Pinterest search works best.</span
+            ><span id="char-count">0/300</span>
+          </div>
+          <div class="examples" aria-label="Example searches">
+            <button type="button" data-query="mens abs gym aesthetic">
+              mens abs gym aesthetic
+            </button>
+            <button type="button" data-query="mens running aesthetic">
+              mens running aesthetic
+            </button>
+          </div>
+          <div class="field-row">
+            <label for="limit">Photos to compare</label
+            ><select id="limit" name="limit">
+              <option value="24">24</option>
+              <option value="60" selected>60</option>
+              <option value="120">120</option>
+            </select>
+          </div>
+          <div class="connection-field">
+            <label for="pick-count">Photos to pick</label>
+            <select id="pick-count" name="top">
+              <option value="10">10</option>
+              <option value="20" selected>20</option>
+              <option value="40">40</option>
+            </select>
+            <p id="selection-help">
+              Keep the highest ranked photos. The rest stay visible.
+            </p>
+          </div>
+          <div class="connection-field">
+            <label for="cookies">Pinterest connection</label
+            ><select id="cookies" name="cookies">
+              <option value="anonymous">Anonymous</option>
+              <option value="chrome">Chrome login</option>
+              <option value="safari">Safari login</option>
+              <option value="firefox">Firefox login</option>
+              <option value="edge">Edge login</option>
+              <option value="brave">Brave login</option>
+              <option value="chromium">Chromium login</option>
+              <option value="opera">Opera login</option>
+              <option value="vivaldi">Vivaldi login</option>
+              <option value="cookies.txt">Local cookies.txt</option>
+            </select>
+            <p class="field-help" id="connection-help">
+              No account needed. Results may be limited.
+            </p>
+          </div>
+          <button type="submit" class="primary-button" id="search-button">
+            <span>Find photos</span
+            ><svg
+              viewBox="0 0 24 24"
+              width="18"
+              height="18"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+              aria-hidden="true"
+            >
+              <circle cx="10.5" cy="10.5" r="6.5" />
+              <path d="m16 16 4 4" />
+            </svg>
+          </button>
+          <p class="first-run-note">
+            First search downloads about 5 GB of image models. They stay cached
+            on your computer.
+          </p>
+        </form>
+        <div class="history" id="history" hidden>
+          <h2>Recent searches</h2>
+          <div id="history-list"></div>
+          <p>Last ten searches, for this session.</p>
+        </div>
+        <div class="sidebar-bottom">
+          <div class="mini-mark" aria-hidden="true">t.</div>
+          <p>Made for photo carousels.<br />Free to run on your computer.</p>
+        </div>
+      </aside>
+      <main id="workspace" tabindex="-1">
+        <div class="workspace-bar">
+          <span>Your carousel photo finder</span
+          ><span class="view-label"
+            >All photos <span aria-hidden="true">/</span> Sorted by taste</span
+          >
+        </div>
+        <section class="empty-state" id="empty-state">
+          <div class="empty-illustration" aria-hidden="true">
+            <div class="paper paper-back"><span></span><i></i></div>
+            <div class="paper paper-front">
+              <span></span><i></i><b>For your next carousel</b>
+            </div>
+            <div class="comparison-mark">NO SLOP</div>
+          </div>
+          <h2>Fresh photos for your<br />next TikTok carousel.</h2>
+          <p>
+            Start with a reference or describe the shot. Find new options on
+            Pinterest, with candid, everyday photos ranked first by a local
+            taste model.
+          </p>
+          <div class="empty-legend">
+            <span><i class="legend-dot high"></i>Carousel picks</span
+            ><span><i class="legend-dot low"></i>Other photos</span>
+          </div>
+        </section>
+        <section
+          class="progress-panel"
+          id="progress-panel"
+          hidden
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          <div class="progress-icon" aria-hidden="true"></div>
+          <h2 id="progress-heading">Finding your photos</h2>
+          <p id="progress-message">Searching Pinterest</p>
+          <div id="search-model-progress" class="model-progress" hidden></div>
+          <ol class="progress-steps" aria-label="Search progress">
+            <li data-stage="searching">Search</li>
+            <li data-stage="downloading">Download</li>
+            <li data-stage="loading">Load models</li>
+            <li data-stage="scoring">Rank</li>
+          </ol>
+          <p class="progress-note">
+            You can leave this tab open while the search runs.
+          </p>
+        </section>
+        <section class="message-panel" id="message-panel" hidden role="alert">
+          <span class="message-symbol" aria-hidden="true">!</span>
+          <h2 id="message-heading"></h2>
+          <p id="message-text"></p>
+          <button class="secondary-button" id="retry-button">Try again</button>
+        </section>
+        <section
+          class="results"
+          id="results"
+          hidden
+          aria-label="Search results"
+        >
+          <div class="results-heading">
+            <div>
+              <h2 id="results-query"></h2>
+              <p id="results-summary"></p>
+            </div>
+            <a class="secondary-button" id="download-all" href="#"
+              >Download picks
+              <svg
+                viewBox="0 0 24 24"
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                aria-hidden="true"
+              >
+                <path d="M12 3v12m-4-4 4 4 4-4M4 16v5h16v-5" /></svg
+            ></a>
+          </div>
+          <div class="results-layout">
+            <section class="selected-panel" aria-label="Selected photo">
+              <div class="selected-heading">
+                <h3>In focus</h3>
+                <span id="selected-group"></span>
+              </div>
+              <button
+                id="selected-open"
+                class="selected-image-button"
+                aria-label="Enlarge selected photo"
+              >
+                <img id="selected-image" alt="" /><span class="expand-label"
+                  >View full photo <span aria-hidden="true">↗</span></span
+                >
+              </button>
+              <div class="selected-details">
+                <span id="selected-score"></span
+                ><a
+                  id="selected-source"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >View pin ↗</a
+                >
+              </div>
+              <p class="selected-title" id="selected-title"></p>
+              <a
+                class="secondary-button download-photo"
+                id="selected-download"
+                href="#"
+                >Download photo</a
+              >
+            </section>
+            <div class="comparison">
+              <section
+                class="rank-group top-group"
+                aria-labelledby="top-heading"
+              >
+                <div class="group-heading">
+                  <div>
+                    <span class="group-symbol" aria-hidden="true">✳</span>
+                    <h3 id="top-heading">Carousel picks</h3>
+                  </div>
+                  <span id="top-count"></span>
+                </div>
+                <p id="top-description">
+                  Highest ranked photos from this search.
+                </p>
+                <div class="photo-grid" id="top-grid"></div>
+              </section>
+              <section
+                class="rank-group bottom-group"
+                aria-labelledby="bottom-heading"
+              >
+                <div class="group-heading">
+                  <div>
+                    <span class="group-symbol" aria-hidden="true">↘</span>
+                    <h3 id="bottom-heading">Other photos</h3>
+                  </div>
+                  <span id="bottom-count"></span>
+                </div>
+                <p id="bottom-description">
+                  Remaining photos, ranked highest first.
+                </p>
+                <div class="photo-grid" id="bottom-grid"></div>
+              </section>
+            </div>
+          </div>
+          <p class="results-footnote">
+            Picks are the highest ranked photos in this search. Scores reflect
+            one person's preferences and are not probabilities of photo quality.
+          </p>
+        </section>
+        <footer class="workspace-footer">
+          <span>Pinterest photos, filtered on your computer.</span
+          ><span>No paid AI API. No per-image fees.</span>
+        </footer>
+      </main>
+    </div>
+    <dialog id="photo-dialog" class="photo-dialog">
+      <button
+        class="dialog-close"
+        data-close="photo-dialog"
+        aria-label="Close photo"
+      >
+        ×</button
+      ><img id="dialog-photo" alt="" />
+      <div class="photo-dialog-footer">
+        <span id="dialog-score"></span
+        ><a id="dialog-download" class="secondary-button">Download photo</a>
+      </div>
+    </dialog>
+    <dialog id="about-dialog" class="about-dialog">
+      <button
+        class="dialog-close"
+        data-close="about-dialog"
+        aria-label="Close about"
+      >
+        ×</button
+      ><span class="about-mark" aria-hidden="true">t.</span>
+      <h2>What makes the cut?</h2>
+      <p>
+        Pinterest Taste helps TikTok carousel creators find alternative photos
+        for their slides. Start with the look you want, then compare the model's
+        highest ranked picks with the other photos found.
+      </p>
+      <p>
+        The bundled model learned from one person's choices: 337 photo
+        comparisons, 260 liked examples, and 672 rejected examples.
+      </p>
+      <p>
+        It leans toward candid phone photos of men's fitness, food, and everyday
+        life. Studio stock, renders, infographics, and pronounced background
+        blur tend to score lower.
+      </p>
+      <p>
+        It is a personal filter, not a guarantee that an image is a real photo
+        or right for every carousel. The score is not a probability that you
+        will like it.
+      </p>
+      <div class="about-note">
+        <strong>What stays local?</strong>
+        <p>
+          Photo descriptions and scoring run on your computer. Your reference
+          photo stays local; only your chosen search text goes to Pinterest.
+          Model files download from Hugging Face on first use.
+        </p>
+      </div>
+      <p class="about-small">
+        This app is not affiliated with Pinterest. Training controls are planned
+        for a later version.
+      </p>
+    </dialog>
+  </body>
+</html>

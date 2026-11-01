@@ -64,14 +64,17 @@ class Embedder:
         import timm, torch
         from transformers import AutoModel, AutoProcessor
         from torchvision import transforms
+        from .model_downloads import SIGLIP, DINO, prepare_model
         self.torch = torch
         self.device = device or ("mps" if torch.backends.mps.is_available() else "cuda" if torch.cuda.is_available() else "cpu")
         dt = torch.float16 if self.device != "cpu" else torch.float32
         self.dt = dt
-        mid = "google/siglip2-so400m-patch14-384"
-        self.proc = AutoProcessor.from_pretrained(mid)
-        self.sig = AutoModel.from_pretrained(mid, dtype=dt).eval().to(self.device)
-        self.dino = timm.create_model("vit_base_patch14_dinov2.lvd142m", pretrained=True).eval().to(self.device)
+        mid = prepare_model(SIGLIP)
+        self.proc = AutoProcessor.from_pretrained(mid, local_files_only=True)
+        self.sig = AutoModel.from_pretrained(mid, dtype=dt, local_files_only=True).eval().to(self.device)
+        dino_path = prepare_model(DINO)
+        self.dino = timm.create_model("vit_base_patch14_dinov2.lvd142m", pretrained=True,
+                                      pretrained_cfg_overlay={"file": f"{dino_path}/model.safetensors"}).eval().to(self.device)
         self.tf = transforms.Compose([
             transforms.Resize((518, 518), interpolation=transforms.InterpolationMode.BICUBIC),
             transforms.ToTensor(),

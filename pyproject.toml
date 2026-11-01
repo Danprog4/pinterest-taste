@@ -1,11 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "pinterest-taste"
 version = "0.1.0"
 description = "Pinterest search that returns pins scored by a learned visual taste (SigLIP 2 + DINOv2), via gallery-dl"
+readme = "README.md"
+license = {file = "LICENSE"}
 requires-python = ">=3.10"
-dependencies = ["gallery-dl", "requests", "numpy", "pillow", "torch", "torchvision", "timm", "transformers"]
+dependencies = ["gallery-dl", "requests", "numpy", "pillow", "torch", "torchvision", "timm", "transformers", "huggingface-hub>=2.4", "tqdm"]
+
+[project.optional-dependencies]
+web = ["fastapi>=0.115,<1", "uvicorn>=0.30,<1"]
+dev = ["pytest>=8", "httpx>=0.27,<1"]
+
+[project.scripts]
+pinterest-taste-web = "pinterest_taste.web:main"
 
 [tool.setuptools]
 packages = ["pinterest_taste"]
+include-package-data = false
 [tool.setuptools.package-data]
-pinterest_taste = ["taste_model.npz"]
+pinterest_taste = ["taste_model.npz", "static/*.html", "static/*.css", "static/*.js", "static/*.svg"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
